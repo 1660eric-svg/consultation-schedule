@@ -47,11 +47,13 @@ function App() {
     if (!hasEndpoint()) { setNotice('먼저 src/config.js에 Apps Script 웹 앱 URL을 입력해 주세요.'); return }
     setIsLoading(true); setNotice('')
     try {
-      await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...form, childName: form.childName.trim() }) })
-      setNotice(`${form.childName.trim()} 학생의 상담 신청을 전송했습니다.`)
+      const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ ...form, childName: form.childName.trim() }) })
+      const result = await response.json()
+      if (!result.ok) throw new Error(result.message || '신청을 저장하지 못했습니다.')
+      setNotice(`${form.childName.trim()} 학생의 상담 신청이 완료되었습니다.`)
       setForm({ childName: '', date: '', time: '' })
-    } catch {
-      setNotice('전송에 실패했습니다. 인터넷 연결과 Apps Script 배포 상태를 확인해 주세요.')
+    } catch (error) {
+      setNotice(error.message || '전송에 실패했습니다. 인터넷 연결과 Apps Script 배포 상태를 확인해 주세요.')
     } finally { setIsLoading(false) }
   }
 
