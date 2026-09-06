@@ -4,8 +4,8 @@
  * 1. 연결할 스프레드시트에서 확장 프로그램 > Apps Script를 엽니다.
  * 2. 이 파일 전체를 붙여 넣습니다.
  * 3. 프로젝트 설정 > 스크립트 속성에서 아래 값을 만듭니다.
- *    - SPREADSHEET_ID: 스프레드시트 URL의 /d/ 와 /edit 사이 문자열
  *    - TEACHER_PASSWORD: 선생님 화면에 사용할 비밀번호
+ *    - SPREADSHEET_ID: (선택) 독립형 Apps Script를 쓸 때만 스프레드시트 URL의 /d/ 와 /edit 사이 문자열
  * 4. deployWebApp()을 한 번 실행해 권한을 승인합니다.
  * 5. 배포 > 새 배포 > 웹 앱: 실행 사용자 '나', 액세스 권한 '모든 사용자'를 선택합니다.
  */
@@ -59,9 +59,21 @@ function doPost(e) {
 }
 
 function getSheet() {
+  // 스프레드시트에서 "확장 프로그램 > Apps Script"로 만든 연결형 스크립트라면
+  // 현재 스프레드시트를 사용하므로 별도 ID 설정이나 공유 권한 문제가 없습니다.
+  const boundSpreadsheet = SpreadsheetApp.getActiveSpreadsheet()
+  if (boundSpreadsheet) {
+    return getOrCreateSheet(boundSpreadsheet)
+  }
+
+  // 독립형 Apps Script 프로젝트인 경우에만 스크립트 속성의 ID를 사용합니다.
   const spreadsheetId = properties().getProperty('SPREADSHEET_ID')
-  if (!spreadsheetId) throw new Error('스크립트 속성 SPREADSHEET_ID를 설정해 주세요.')
+  if (!spreadsheetId) throw new Error('독립형 Apps Script는 스크립트 속성 SPREADSHEET_ID를 설정해 주세요.')
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId)
+  return getOrCreateSheet(spreadsheet)
+}
+
+function getOrCreateSheet(spreadsheet) {
   const sheet = spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME)
   if (sheet.getLastRow() === 0) {
     sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS])
