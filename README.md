@@ -19,9 +19,9 @@ npm run dev
 
 1. 새 Google 스프레드시트를 만들고 URL에서 스프레드시트 ID를 복사합니다. (`/d/`와 `/edit` 사이 값)
 2. 해당 스프레드시트에서 **확장 프로그램 → Apps Script**를 열고 [apps-script/Code.gs](apps-script/Code.gs)의 전체 코드를 붙여 넣습니다.
-3. Apps Script의 **프로젝트 설정 → 스크립트 속성**에 아래 두 값을 만듭니다.
-   - `SPREADSHEET_ID`: 1단계의 스프레드시트 ID
-   - `TEACHER_PASSWORD`: 선생님 화면 비밀번호
+3. Apps Script의 **프로젝트 설정 → 스크립트 속성**에 `TEACHER_PASSWORD`(선생님 화면 비밀번호)를 만듭니다.
+   - 스프레드시트에서 Apps Script를 열었다면 `SPREADSHEET_ID`는 필요 없습니다.
+   - 독립형 Apps Script 프로젝트를 쓴 경우에만 `SPREADSHEET_ID`에 1단계의 스프레드시트 ID를 넣습니다.
 4. 코드 편집기에서 `deployWebApp` 함수를 한 번 실행해 권한을 승인합니다.
 5. **배포 → 새 배포 → 유형: 웹 앱**을 선택합니다. 실행 사용자는 `나`, 액세스 권한은 `모든 사용자`로 설정한 뒤 배포합니다.
 6. 배포 URL 중 `/exec`로 끝나는 주소를 [src/config.js](src/config.js)의 `APPS_SCRIPT_URL`에 붙여 넣습니다.
